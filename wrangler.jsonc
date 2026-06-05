@@ -2,13 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "lang-app",
   "main": "src/index.ts",
-  "compatibility_date": "2026-06-05"
+  "compatibility_date": "2026-06-05",
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
+  "vars": {
+    "AZURE_TRANSLATOR_KEY": "",
+    "AZURE_TRANSLATOR_REGION": "",
+    "AZURE_SPEECH_KEY": "",
+    "AZURE_SPEECH_REGION": "",
+  },
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",
