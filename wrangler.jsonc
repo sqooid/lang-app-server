@@ -4,12 +4,12 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-06-05",
   "compatibility_flags": ["nodejs_compat"],
-  "vars": {
-    "AZURE_TRANSLATOR_KEY": "",
-    "AZURE_TRANSLATOR_REGION": "",
-    "AZURE_SPEECH_KEY": "",
-    "AZURE_SPEECH_REGION": "",
-  },
+  "routes": [
+    {
+      "pattern": "echolearn-api.thesqooid.com",
+      "custom_domain": true,
+    },
+  ],
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",
