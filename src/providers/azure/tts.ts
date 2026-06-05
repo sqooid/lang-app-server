@@ -13,35 +13,48 @@ const LANG_TO_VOICE: Record<string, string> = {
   it: "it-IT-ElsaNeural",
 };
 
+const localeFromVoice = (voiceName: string): string =>
+  voiceName.split("-").slice(0, 2).join("-");
+
 export const createAzureTTS = (key: string, region: string): TTS => {
   return {
     textToSpeech: async (text, language) => {
       logger.info({ text, language }, "Azure TTS: synthesizing speech");
 
       const voiceName = LANG_TO_VOICE[language] ?? LANG_TO_VOICE["en"];
+      const locale = localeFromVoice(voiceName);
       const endpoint = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
 
-      const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="${language}">
-  <voice name="${voiceName}">
-    <mstts:express-as style="general">
-      ${escapeXml(text)}
-    </mstts:express-as>
-  </voice>
-</speak>`;
+      const ssml = [
+        `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${locale}">`,
+        `  <voice name="${voiceName}">`,
+        `    ${escapeXml(text)}`,
+        `  </voice>`,
+        `</speak>`,
+      ].join("\n");
 
       const res = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Ocp-Apim-Subscription-Key": key,
           "Content-Type": "application/ssml+xml",
-          "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
+          "X-Microsoft-OutputFormat": "audio-16khz-64kbitrate-mono-mp3",
+          "User-Agent": "lang-app",
         },
-        body: ssml,
+        body: new TextEncoder().encode(ssml),
       });
 
       if (!res.ok) {
         const body = await res.text();
-        logger.error({ status: res.status, body }, "Azure TTS: request failed");
+        logger.error(
+          {
+            status: res.status,
+            body,
+            endpoint,
+            headers: Object.fromEntries(res.headers.entries()),
+          },
+          "Azure TTS: request failed",
+        );
         throw new Error(`Azure TTS error ${res.status}: ${body}`);
       }
 

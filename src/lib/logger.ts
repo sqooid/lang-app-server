@@ -1,13 +1,11 @@
 import pino from "pino";
+import pretty from "pino-pretty";
 
-export const logger = pino(
-  pino.transport({
-    target: "pino-pretty",
-    options: {
-      colorize: true,
-      sync: true,
-      translateTime: "HH:MM:ss.l",
-      ignore: "pid,hostname",
-    },
-  }),
-);
+const stream = pretty({
+  colorize: true,
+  sync: true,
+  translateTime: "HH:MM:ss.l",
+  ignore: "pid,hostname",
+});
+
+export const logger = pino({}, stream);

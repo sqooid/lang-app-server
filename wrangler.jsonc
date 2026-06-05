@@ -3,9 +3,7 @@
   "name": "lang-app",
   "main": "src/index.ts",
   "compatibility_date": "2026-06-05",
-  // "compatibility_flags": [
-  //   "nodejs_compat"
-  // ],
+  "compatibility_flags": ["nodejs_compat"],
   "vars": {
     "AZURE_TRANSLATOR_KEY": "",
     "AZURE_TRANSLATOR_REGION": "",
