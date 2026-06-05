@@ -3,7 +3,7 @@ import type { TTS } from "../../tts/index";
 
 const LANG_TO_VOICE: Record<string, string> = {
   en: "en-US-AvaMultilingualNeural",
-  ja: "ja-JP-NanamiNeural",
+  ja: "ja-JP-KeitaNeural",
   zh: "zh-CN-XiaoxiaoNeural",
   ko: "ko-KR-SunHiNeural",
   fr: "fr-FR-DeniseNeural",
@@ -21,9 +21,11 @@ export const createAzureTTS = (key: string, region: string): TTS => {
       const voiceName = LANG_TO_VOICE[language] ?? LANG_TO_VOICE["en"];
       const endpoint = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
 
-      const ssml = `<speak version="1.0" xml:lang="${language}">
+      const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="${language}">
   <voice name="${voiceName}">
-    ${escapeXml(text)}
+    <mstts:express-as style="general">
+      ${escapeXml(text)}
+    </mstts:express-as>
   </voice>
 </speak>`;
 
@@ -32,7 +34,7 @@ export const createAzureTTS = (key: string, region: string): TTS => {
         headers: {
           "Ocp-Apim-Subscription-Key": key,
           "Content-Type": "application/ssml+xml",
-          "X-Microsoft-OutputFormat": "audio-16khz-64kbitrate-mono-mp3",
+          "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
         },
         body: ssml,
       });
