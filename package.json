@@ -2,9 +2,9 @@
   "name": "lang-app",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "dev": "cf dev",
+    "deploy": "cf deploy",
+    "cf-typegen": "cf workers types"
   },
   "dependencies": {
     "hono": "^4.12.23",
@@ -15,7 +15,8 @@
     "@cloudflare/workers-types": "^4.20260605.1",
     "@types/bun": "latest",
     "@types/node": "^25.9.1",
-    "wrangler": "^4.4.0"
+    "cf": "^1.0.0-beta.10",
+    "wrangler": "^4.146.0"
   },
   "module": "src/index.ts",
   "private": true,

@@ -10,4 +10,5 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
   },
+  "include": ["src", "cloudflare.config.ts", ".cloudflare/types"],
 }
