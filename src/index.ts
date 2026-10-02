@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { createAzureTranslator } from "./providers/azure/translator";
 import { createAzureTTS } from "./providers/azure/tts";
 import { createTranslationService } from "./translation/service";
+import { LANGUAGES, normalizeLanguage } from "./tts/index";
 import { createTTSService } from "./tts/service";
 import { logger } from "./lib/logger";
 
@@ -61,11 +62,27 @@ app.post("/translate", async (c) => {
 });
 
 app.post("/tts", async (c) => {
+  const body = await c.req.json<{ text: string; language: string }>();
+
+  const language =
+    typeof body.language === "string"
+      ? normalizeLanguage(body.language)
+      : undefined;
+  if (!language) {
+    return c.json(
+      {
+        error: "unsupported_language",
+        language: body.language,
+        supported: LANGUAGES,
+      },
+      400,
+    );
+  }
+
   const tts = createAzureTTS(c.env.AZURE_SPEECH_KEY, c.env.AZURE_SPEECH_REGION);
   const service = createTTSService(tts);
 
-  const body = await c.req.json<{ text: string; language: string }>();
-  const result = await service.textToSpeech(body.text, body.language);
+  const result = await service.textToSpeech(body.text, language);
   return c.body(result.audio.buffer as ArrayBuffer, 200, {
     "Content-Type": "audio/mpeg",
   });

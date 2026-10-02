@@ -1,16 +1,18 @@
 import { logger } from "../../lib/logger";
-import type { TTS } from "../../tts/index";
+import { normalizeLanguage } from "../../tts/index";
+import type { Language, TTS } from "../../tts/index";
 
-const LANG_TO_VOICE: Record<string, string> = {
+const LANG_TO_VOICE: Record<Language, string> = {
   en: "en-US-AvaMultilingualNeural",
   ja: "ja-JP-KeitaNeural",
-  zh: "zh-CN-XiaoxiaoNeural",
   ko: "ko-KR-SunHiNeural",
   fr: "fr-FR-DeniseNeural",
   de: "de-DE-KatjaNeural",
   es: "es-ES-ElviraNeural",
   pt: "pt-BR-FranciscaNeural",
   it: "it-IT-ElsaNeural",
+  "zh-Hans": "zh-CN-XiaoxiaoNeural",
+  "zh-Hant": "zh-TW-HsiaoChenNeural",
 };
 
 const localeFromVoice = (voiceName: string): string =>
@@ -19,9 +21,17 @@ const localeFromVoice = (voiceName: string): string =>
 export const createAzureTTS = (key: string, region: string): TTS => {
   return {
     textToSpeech: async (text, language) => {
-      logger.info({ text, language }, "Azure TTS: synthesizing speech");
+      const normalized = normalizeLanguage(language);
+      if (!normalized) {
+        throw new Error(`Azure TTS: unsupported language "${language}"`);
+      }
 
-      const voiceName = LANG_TO_VOICE[language] ?? LANG_TO_VOICE["en"];
+      logger.info(
+        { text, language: normalized },
+        "Azure TTS: synthesizing speech",
+      );
+
+      const voiceName = LANG_TO_VOICE[normalized];
       const locale = localeFromVoice(voiceName);
       const endpoint = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
 
